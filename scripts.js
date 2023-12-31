@@ -13,13 +13,13 @@ const light = document.getElementById("light");
 function resetMain() {
     mainElement.innerHTML = "";
     const pre1 = document.createElement("pre");
-    pre1.textContent = '+═════════+════════════════════════════════════════+═══════+═══════════+═════════════+══════════+';
+    pre1.textContent = '+=========+========================================+=======+===========+=============+==========+';
     mainElement.appendChild(pre1);
     const pre2 = document.createElement("pre");
-    pre2.textContent = '║ VERDICT ║ PROBLEM NAME                           ║ TESTS ║ TIME (ms) ║ MEMORY (KB) ║ LANGUAGE ║';
+    pre2.textContent = '| VERDICT | PROBLEM NAME                           | TESTS | TIME (ms) | MEMORY (KB) | LANGUAGE |';
     mainElement.appendChild(pre2);
     const pre3 = document.createElement("pre");
-    pre3.textContent = '+═════════+════════════════════════════════════════+═══════+═══════════+═════════════+══════════+';
+    pre3.textContent = '+=========+========================================+=======+===========+=============+==========+';
     mainElement.appendChild(pre3);
 }
 
@@ -114,7 +114,8 @@ function displaySubmission(submission) {
     mainElement.appendChild(pre);
 
     const divider = document.createElement("pre");
-    divider.textContent = '+─────────+────────────────────────────────────────+───────+───────────+─────────────+──────────+';
+                     //    +=========+========================================+=======+===========+=============+==========+
+    divider.textContent = '+---------+----------------------------------------+-------+-----------+-------------+----------+';
     mainElement.appendChild(divider);
     scrollToBottom();
 }
@@ -181,7 +182,9 @@ async function getSunmission() {
     } else {
         vfx(405, 12000, "#f00");
     }
-    playMusic(submission.verdict); 
+    if (is_music_on) {
+        playMusic(submission.verdict); 
+    }
 }
 
 /**
