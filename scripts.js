@@ -90,7 +90,7 @@ function displaySubmission(submission) {
     mainElement.appendChild(pre);
 
     const sep = document.createElement('pre');
-    sep.textContent = "--+---------+-----------------------------------+-------+-----------+-------------+----------+";
+    sep.textContent = "  +---------+-----------------------------------+-------+-----------+-------------+----------+";
     mainElement.appendChild(sep);
     scrollToBottom();
 

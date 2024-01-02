@@ -29,7 +29,7 @@ button {
 }
 
 button:hover {
-    text-shadow: 0 0 1px white, 0 0 5px white, 0 0 10px white, 0 0 20px white;
+    text-shadow: 0 0 1px #0ff, 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff, 0 0 50px #0ff;
 }
 
 button:active {
@@ -72,6 +72,6 @@ footer > pre {
 
 @media (max-width: 1000px) {
     * {
-        font-size: 0.8rem;
+        font-size: xx-small;
     }
 }
