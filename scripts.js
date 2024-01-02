@@ -1,62 +1,59 @@
-let handle = null;
-let latest_contest_id = 0;
+var handle = null;
+var loggedIn = false;
+var lastSubmission = 0;
 
-let is_logged_in = false;
-let is_music_on = true;
+const lightbarElement = document.getElementById('lightbar');
+function inflateLightBar() {
+    const windowWidth = window.innerWidth;
+    const currentWidth = lightbarElement.getBoundingClientRect().width;
 
-const musicButton = document.getElementById("music-button");
-const loginButton = document.getElementById("login-button");
-const mainElement = document.getElementById("main");
-const lightBar = document.getElementById("light-bar");
-const light = document.getElementById("light");
-
-function resetMain() {
-    mainElement.innerHTML = "";
-    const pre1 = document.createElement("pre");
-    pre1.textContent = '+=========+========================================+=======+===========+=============+==========+';
-    mainElement.appendChild(pre1);
-    const pre2 = document.createElement("pre");
-    pre2.textContent = '| VERDICT | PROBLEM NAME                           | TESTS | TIME (ms) | MEMORY (KB) | LANGUAGE |';
-    mainElement.appendChild(pre2);
-    const pre3 = document.createElement("pre");
-    pre3.textContent = '+=========+========================================+=======+===========+=============+==========+';
-    mainElement.appendChild(pre3);
-}
-
-function reset() {
-    handle = null;
-    latest_contest_id = 0;
-    is_logged_in = false;
-    is_music_on = true;
-
-    loginButton.innerHTML = "Login";
-    loginButton.style.backgroundColor = "#0f0";
-
-    resetMain();
-}
-
-function getHandle() {
-    if (is_logged_in) {
-        reset();
-    } else {
-        handle = prompt("Enter your Codeforces Handle", "barvay");
-        if (handle.length > 0) {
-            is_logged_in = true;
-            loginButton.innerHTML = "Logout";
-            loginButton.style.backgroundColor = "#f00";
-        } else {
-            reset();
-        }
+    if (currentWidth < windowWidth) {
+        lightbarElement.innerHTML += "=";
+        inflateLightBar();
     }
 }
 
-function toggleMusic() {
-    if (is_music_on) {
-        musicButton.style.backgroundColor = "lightcoral";
-        is_music_on = false;
-    } else {
-        musicButton.style.backgroundColor = "lightgreen";
-        is_music_on = true;
+const loginButton = document.getElementById('login-button');
+function getHandle() {
+    if (loggedIn) {
+        handle = null;
+        mainElement.innerHTML = "";
+        lastSubmission = 0;
+        loggedIn = false;
+        loginButton.textContent = "Login ";
+    } else { 
+        let val = prompt("Enter your handle", "barvay");
+        if (val == null || val == "") {
+            alert("Enter a valid handle")
+            return;
+        }
+        handle = val;
+        loggedIn = true;
+        getSubmission();
+        loginButton.textContent = "Logout";
+    }
+}
+
+function abbreviateVerdict(verdict) {
+    switch (verdict) {
+        case "FAILED": return "FAILED";
+        case "OK": return "AC";
+        case "PARTIAL": return "PARTIAL";
+        case "COMPILATION_ERROR": return "CE";
+        case "RUNTIME_ERROR": return "RE";
+        case "WRONG_ANSWER": return "WA";
+        case "PRESENTATION_ERROR": return "PE";
+        case "TIME_LIMIT_EXCEEDED": return "TLE";
+        case "MEMORY_LIMIT_EXCEEDED": return "MLE";
+        case "IDLENESS_LIMIT_EXCEEDED": return "ILE";
+        case "SECURITY_VIOLATED": return "SV";
+        case "CRASHED": return "CRASHED";
+        case "INPUT_PREPARATION_CRASHED": return "IPC";
+        case "CHALLENGED": return "CH";
+        case "SKIPPED": return "SKIPPED";
+        case "TESTING": return "TESTING";
+        case "REJECTED": return "REJ";
+        default: return verdict;
     }
 }
 
@@ -72,89 +69,63 @@ function formatString(inputString, width) {
     return formattedString;
 }
 
-function verdictToTag(verdict) {
-    switch (verdict) {
-        case "OK":
-            return `[ACC]`;
-        case "WRONG_ANSWER":
-            return `[WA_]`;
-        case "TIME_LIMIT_EXCEEDED":
-            return `[TLE]`;
-        case "MEMORY_LIMIT_EXCEEDED":
-            return `[MLE]`;
-        case "RUNTIME_ERROR":
-            return `[RTE]`;
-        case "COMPILATION_ERROR":
-            return `[CE_]`;
-        case "IDLENESS_LIMIT_EXCEEDED":
-            return `[ILE]`;
-        case "TESTING":
-            return `[TST]`;
-        default:
-            return `[???]`;
-    }
-}
-
+const mainElement = document.getElementById('main');
 function scrollToBottom() {
     mainElement.scrollTop = mainElement.scrollHeight;
 }
 
 function displaySubmission(submission) {
-    document.title = `CFSN says: ${verdictToTag(submission.verdict)}`;
-    const pre = document.createElement("pre");
+    const pre = document.createElement('pre');
 
-    pre.textContent = '|' + formatString(verdictToTag(submission.verdict), 9) 
-                    + '|' + ` ${submission.problem.index} - ${submission.problem.name} `.padEnd(40, ' ')
-                    + '|' + formatString(submission.passedTestCount.toString(), 7)
-                    + '|' + formatString(submission.timeConsumedMillis.toString(), 11)
-                    + '|' + formatString(submission.memoryConsumedBytes.toString(), 13)
-                    + '|' + formatString(submission.programmingLanguage, 10)
-                    + '|';
+    const verdict = formatString(abbreviateVerdict(submission.verdict), 9);
+    const problemName = ` ${submission.problem.index} - ${submission.problem.name}`.padEnd(35, ' ');
+    const tests = formatString(submission.passedTestCount.toString(), 7);
+    const time = formatString(submission.timeConsumedMillis.toString(), 11);
+    const memory = formatString(submission.memoryConsumedBytes.toString(), 13);
+    const language = formatString(submission.programmingLanguage, 10);
+
     pre.style.color = submission.verdict === "OK" ? "lightgreen" : "lightcoral";
+
+    pre.textContent = `  |${verdict}|${problemName}|${tests}|${time}|${memory}|${language}|`;
     mainElement.appendChild(pre);
 
-    const divider = document.createElement("pre");
-                     //    +=========+========================================+=======+===========+=============+==========+
-    divider.textContent = '+---------+----------------------------------------+-------+-----------+-------------+----------+';
-    mainElement.appendChild(divider);
+    const sep = document.createElement('pre');
+    sep.textContent = "--+---------+-----------------------------------+-------+-----------+-------------+----------+";
+    mainElement.appendChild(sep);
     scrollToBottom();
+
+    document.title = `${abbreviateVerdict(submission.verdict)}: ${submission.problem.index}`;
 }
 
-function playMusic(verdict) {
-    if (verdict === "OK") {
-        const audio = new Audio('assets/sounds/ac.mp3');
-        audio.volume = 0.5;
-        audio.play();
-    } else {
-        const audio = new Audio('assets/sounds/fail.mp3');
-        audio.volume = 0.5;
-        audio.play();
+const acAudio = document.getElementById('ac-audio');
+const failAudio = document.getElementById('fail-audio');
+async function playMusic(verdict) {
+    const audio = verdict === "OK" ? acAudio : failAudio;
+    audio.volume = 0.1;
+    await audio.play();
+}
+
+async function vfx(verdict, duration) {
+    const waittime = 290;
+    const timeout = duration * 1000 / (waittime*2);
+    const originalColor = lightbarElement.style.color;
+    const color = verdict === "OK" ? "#0f0" : "#f00";
+
+    for (let i = 0; i < timeout; i++) {
+        lightbarElement.style.color = color;
+        lightbarElement.style.textShadow = `0 0 1px ${color}, 0 0 3px ${color}, 0 0 5px ${color}, 0 0 7px ${color}, 0 0 10px ${color}, 0 0 15px ${color}, 0 0 20px ${color}, 0 0 30px ${color}, 0 0 40px ${color}, 0 0 50px ${color}, 0 0 75px ${color}`;
+        
+        await new Promise(resolve => setTimeout(resolve, waittime));
+
+        lightbarElement.style.color = originalColor;
+        lightbarElement.style.textShadow = "none";
+
+        await new Promise(resolve => setTimeout(resolve, waittime));
     }
 }
 
-function vfx(bpm, duration, color) {
-    const originalColor = light.style.color
-  
-    let flashingInterval = setInterval(() => {
-        lightBar.style.boxShadow = `0 0 20px 10px ${color}`;
-        light.style.color = color
-        setTimeout(() => {
-            lightBar.style.boxShadow = "none";
-            light.style.color = originalColor
-        }, bpm / 2);
-    }, bpm);
-  
-    setTimeout(() => {
-        clearInterval(flashingInterval);
-        lightBar.style.boxShadow = "none";
-        light.style.color = originalColor
-    }, duration);
-}
-
-async function getSunmission() {
-    if (!is_logged_in) {
-        return;
-    }
+async function getSubmission() {
+    if (!loggedIn) return;
 
     /**
      * @see https://codeforces.com/apiHelp/methods#user.status
@@ -162,33 +133,23 @@ async function getSunmission() {
     const response = await fetch(`https://codeforces.com/api/user.status?handle=${handle}&from=1&count=1`);
     const data = await response.json();
 
-    if (data.status !== "OK") {
-        return;
-    }
+    if (data.status != "OK") return;
 
     const submission = data.result[0];
-    if (submission.id <= latest_contest_id) {
-        return;
-    }
 
-    if (submission.verdict === "TESTING" || submission.verdict === "" || submission.verdict === null) {
-        return;
-    }
+    if (submission.id <= lastSubmission) return;
+    if (submission.verdict === "TESTING" || submission.verdict === "" || submission.verdict === null) return;
 
-    latest_contest_id = submission.id;
+    lastSubmission = submission.id;
     displaySubmission(submission);
-    if (submission.verdict == "OK") {
-        vfx(405, 8200, "#0f0");
-    } else {
-        vfx(405, 12000, "#f00");
-    }
-    if (is_music_on) {
-        playMusic(submission.verdict); 
-    }
+    playMusic(submission.verdict);
+    vfx(submission.verdict, submission.verdict === "OK" ? 12 : 9);
 }
 
 /**
  * Control from here...
  */
-reset();
-setInterval(getSunmission, 5000);
+
+inflateLightBar();
+window.addEventListener('resize', inflateLightBar);
+setInterval(getSubmission, 3000);

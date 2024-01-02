@@ -4,23 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CFSN</title>
-    <link rel="icon" href="assets/images/favicon.ico">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <button id="music-button" onclick="toggleMusic()">Music</button>
-        <button id="login-button" onclick="getHandle()">Login</button>
-    </header>
+    <nav>
+        <div class="header">
+            <pre>  |         |                                   |       |           |             |          |</pre>
+            <pre>==+=========+===================================+=======+===========+=============+==========+</pre>
+            <!--        9                      35                    7        11            13          10        -->
+            <pre>  | Verdict | Problem name                      | Tests | Time (ms) | Memory (KB) | Language |</pre>
+            <pre>==+=========+===================================+=======+===========+=============+==========+</pre>
+        </div>
+        <div class="login">
+            <pre>|        |  </pre>
+            <pre>+========+==</pre>
+            <pre>| <button id="login-button" onclick="getHandle()">Login </button> |</pre>
+            <pre>+========+==</pre>
+        </div>
+    </nav>
     <main id="main">
-        <!--      9                        40                       7         11           13          10        -->
-        <pre>+=========+========================================+=======+===========+=============+==========+</pre>
-        <pre>| VERDICT | PROBLEM NAME                           | TESTS | TIME (ms) | MEMORY (KB) | LANGUAGE |</pre>
-        <pre>+=========+========================================+=======+===========+=============+==========+</pre>
+
     </main>
-    <footer id="light-bar">
-        <p id="light">&copy; 2023 CFSN by Benedek Árvay (barvay) All rights reserved. | Licensed under the MIT License</p>
+    <footer>
+        <pre id="lightbar"> &copy; 2023 CFSN by barvay </pre>
     </footer>
+    <audio src="assets/sounds/ac.mp3" preload="auto" id="ac-audio"></audio>
+    <audio src="assets/sounds/fail.mp3" preload="auto" id="fail-audio"></audio>
     <script src="scripts.js"></script>
 </body>
 </html>
