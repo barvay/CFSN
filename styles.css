@@ -70,8 +70,16 @@ footer > pre {
     color: #010101;
 }
 
-@media (max-width: 1000px) {
+footer > p {
+    text-align: center;
+}
+
+#copy {
+    color: #111;
+}
+
+@media only screen and (max-width: 1000px) {
     * {
-        font-size: xx-small;
+      font-size: xx-small;
     }
 }

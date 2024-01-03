@@ -8,7 +8,7 @@ function inflateLightBar() {
     const currentWidth = lightbarElement.getBoundingClientRect().width;
 
     if (currentWidth < windowWidth) {
-        lightbarElement.innerHTML += "=";
+        lightbarElement.innerHTML += "_";
         inflateLightBar();
     }
 }
@@ -105,6 +105,7 @@ async function playMusic(verdict) {
     await audio.play();
 }
 
+const copyElement = document.getElementById('copy');
 async function vfx(verdict, duration) {
     const waittime = 290;
     const timeout = duration * 1000 / (waittime*2);
@@ -112,11 +113,13 @@ async function vfx(verdict, duration) {
     const color = verdict === "OK" ? "#0f0" : "#f00";
 
     for (let i = 0; i < timeout; i++) {
+        copyElement.style.color = color;
         lightbarElement.style.color = color;
         lightbarElement.style.textShadow = `0 0 1px ${color}, 0 0 3px ${color}, 0 0 5px ${color}, 0 0 7px ${color}, 0 0 10px ${color}, 0 0 15px ${color}, 0 0 20px ${color}, 0 0 30px ${color}, 0 0 40px ${color}, 0 0 50px ${color}, 0 0 75px ${color}`;
         
         await new Promise(resolve => setTimeout(resolve, waittime));
 
+        copyElement.style.color = "#111";
         lightbarElement.style.color = originalColor;
         lightbarElement.style.textShadow = "none";
 
